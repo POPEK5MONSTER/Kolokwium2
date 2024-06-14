@@ -91,8 +91,11 @@ public class DbService : IDbService
         {
             throw new Exception();
         }
+
+        var result = character.CurrentWeight += ammount;
+            
         
-        return (character.CurrentWeight += ammount) <= character.MaxWeight;
+        return result <= character.MaxWeight;
 
     }
 
@@ -121,8 +124,7 @@ public class DbService : IDbService
                 }
                 await Context.SaveChangesAsync();
             }
-            
-            int ammount = 0;
+
             foreach (var itemId in newIdItems)
             {
                 Item? item = await Context.Items.FindAsync(itemId);
@@ -130,7 +132,6 @@ public class DbService : IDbService
                 {
                     throw new Exception();
                 }
-                ammount += item.Weight;
             }
 
             Character? character = await Context.Characters.FindAsync(id);
@@ -138,7 +139,6 @@ public class DbService : IDbService
             {
                 throw new Exception();
             }
-            character.CurrentWeight += ammount;
             
             await Context.SaveChangesAsync();
             
@@ -150,7 +150,7 @@ public class DbService : IDbService
     {
         var result = await Context.Backpacks.Where(x => x.CharacterId == id).Select(x => new
         {
-            amount =x.Amount,
+            amount = x.Amount,
             itemId = x.ItemId,
             characterId = id
         }).ToListAsync();
